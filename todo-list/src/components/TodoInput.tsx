@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
 import styled from 'styled-components'
 import TodoItem from '../interfaces/TodoItem'
+import { DEVICE_WIDTH } from '../constant/windowsMedia'
 
 interface Props {
 	setTodoList: React.Dispatch<React.SetStateAction<TodoItem[]>>
@@ -11,16 +12,71 @@ interface Props {
 const TodoInputContainer = styled.div`
 	padding: 10px;
 	display: flex;
+	flex-direction: ${() => (DEVICE_WIDTH > 768 ? 'row' : 'column')};
 	justify-content: center;
 	align-items: center;
 	gap: 10px;
+	width: 100%;
+	color: #332e2e;
+`
+const TodoTextInput = styled.input`
+	flex: 1;
+	height: 44px;
+	width: 100%;
+	min-height: 35px;
+	background-color: #05060f0a;
+	border-radius: 0.5rem;
+	padding: 0 1rem;
+	border: 2px solid transparent;
+	font-size: 1rem;
+	transition: border-color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
+		color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
+		background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
+
+	&:hover,
+	&:focus {
+		outline: none;
+		border-color: #05060f;
+	}
 `
 const AddTaskButton = styled.button`
 	padding: 10px;
 	color: #fff;
-	background-color: aqua;
-	border: 1px solid #ccc;
-	box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+	background-color: #13aa52;
+	border: 1px solid #13aa52;
+	border-radius: 4px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
+	color: #fff;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: 400;
+	outline: none;
+	outline: 0;
+	padding: 10px 25px;
+	text-align: center;
+	transform: translateY(0);
+	transition: transform 250ms, box-shadow 150ms;
+	&:hover {
+		box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0;
+		transform: translateY(-1px);
+	}
+`
+const StatusInput = styled.div`
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 7px;
+	& span > label {
+		margin-right: 5px;
+		line-height: 1.3;
+	}
+`
+const DateInput = styled.div`
+	& label {
+		margin-right: 5px;
+	}
+	& input {
+		padding: 2px 5px;
+	}
 `
 
 const TodoInput = ({ setTodoList }: Props) => {
@@ -32,6 +88,7 @@ const TodoInput = ({ setTodoList }: Props) => {
 	)
 
 	const addTodoHandle = (): void => {
+		if (!todoInput) return
 		const newTodo: TodoItem = {
 			id: uuidv4(),
 			body: todoInput,
@@ -56,7 +113,7 @@ const TodoInput = ({ setTodoList }: Props) => {
 
 	return (
 		<TodoInputContainer>
-			<input
+			<TodoTextInput
 				type="text"
 				className="todo-body"
 				placeholder="Enter your task"
@@ -67,10 +124,10 @@ const TodoInput = ({ setTodoList }: Props) => {
 				}}
 			/>
 			<div>
-				<div>
+				<StatusInput>
 					<span>
 						<label htmlFor="inportance-task-input">
-							Importance
+							Importance{' '}
 						</label>
 						<input
 							type="checkbox"
@@ -83,7 +140,7 @@ const TodoInput = ({ setTodoList }: Props) => {
 						/>
 					</span>
 					<span>
-						<label htmlFor="urgency-task-input">Urgency</label>
+						<label htmlFor="urgency-task-input">Urgency </label>
 						<input
 							type="checkbox"
 							name=""
@@ -92,9 +149,9 @@ const TodoInput = ({ setTodoList }: Props) => {
 							onChange={() => setUrgencyInput(!urgencyInput)}
 						/>
 					</span>
-				</div>
-				<div>
-					<label htmlFor="deadline-task-input">Deadline</label>
+				</StatusInput>
+				<DateInput>
+					<label htmlFor="deadline-task-input">Deadline </label>
 					<input
 						type="date"
 						name=""
@@ -102,7 +159,7 @@ const TodoInput = ({ setTodoList }: Props) => {
 						value={dateInput}
 						onChange={dateInputChangeHandle}
 					/>
-				</div>
+				</DateInput>
 			</div>
 			<AddTaskButton autoFocus={true} onClick={() => addTodoHandle()}>
 				Add Task
