@@ -1,19 +1,36 @@
 import styled from 'styled-components'
 import TodoItem from '../interfaces/TodoItem'
 import Todo from './Todo'
+import { DEVICE_WIDTH } from '../constant/windowsMedia'
 
 interface Props {
 	todoList: Array<TodoItem>
 }
 const EisenhowerMatrixContainer = styled.div`
 	display: grid;
-	grid-template: repeat(2, 1fr) / repeat(2, 1fr);
+	grid-template: ${() =>
+		DEVICE_WIDTH > 768 ? 'repeat(2, 1fr) / repeat(2, 1fr)' : 'auto / auto'};
+	width: 100%;
+	flex: 1;
 `
-const EisenhowerMatrixCategory = styled.div`
+const EisenhowerMatrixCategory = styled.div<{ $category: string }>`
 	padding: 10px;
 	border: 1px solid #000;
 	color: #fff;
-	background-color: #ccc;
+	background-color: ${(props) => {
+		switch (props.$category) {
+			case 'do':
+				return 'green'
+				break
+			case 'schedule':
+				return 'orange'
+				break
+			case 'deligate':
+				return 'blue'
+			case 'delete':
+				return 'red'
+		}
+	}};
 `
 
 const TodoList = ({ todoList }: Props) => {
@@ -40,27 +57,27 @@ const TodoList = ({ todoList }: Props) => {
 
 	return (
 		<EisenhowerMatrixContainer>
-			<EisenhowerMatrixCategory>
+			<EisenhowerMatrixCategory $category="do">
 				<span>Do</span>
 				{doTodoList.map((todo) => {
 					return <Todo key={todo.id} todo={todo} />
 				})}
 			</EisenhowerMatrixCategory>
-			<EisenhowerMatrixCategory>
+			<EisenhowerMatrixCategory $category="schedule">
 				<span>Schedule</span>
-				{doTodoList.map((todo) => {
+				{scheduleTodoList.map((todo) => {
 					return <Todo key={todo.id} todo={todo} />
 				})}
 			</EisenhowerMatrixCategory>
-			<EisenhowerMatrixCategory>
+			<EisenhowerMatrixCategory $category="deligate">
 				<span>Delegate</span>
-				{doTodoList.map((todo) => {
+				{deligateTodoList.map((todo) => {
 					return <Todo key={todo.id} todo={todo} />
 				})}
 			</EisenhowerMatrixCategory>
-			<EisenhowerMatrixCategory>
+			<EisenhowerMatrixCategory $category="delete">
 				<span>Delete</span>
-				{doTodoList.map((todo) => {
+				{deleteTodoList.map((todo) => {
 					return <Todo key={todo.id} todo={todo} />
 				})}
 			</EisenhowerMatrixCategory>
