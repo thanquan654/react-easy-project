@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import TodoList from './components/TodoList'
 import TodoItem from './interfaces/TodoItem'
@@ -22,7 +22,13 @@ const AppContainer = styled.div`
 `
 
 function App() {
-	const [todoList, setTodoList] = useState<TodoItem[]>([])
+	const [todoList, setTodoList] = useState<TodoItem[]>(
+		JSON.parse(localStorage.getItem('todoList') || '{[]}'),
+	)
+
+	useEffect(() => {
+		localStorage.setItem('todoList', JSON.stringify(todoList))
+	}, [todoList])
 
 	return (
 		<>
