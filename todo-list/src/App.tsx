@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import './App.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import TodoList from './components/TodoList'
 import TodoItem from './interfaces/TodoItem'
 import TodoInput from './components/TodoInput'
 import styled from 'styled-components'
-import { DEVICE_WIDTH } from './constant/windowsMedia'
+import { DEVICE_WIDTH } from './constants/windowsMedia'
 
 const AppContainer = styled.div`
 	width: ${() => (DEVICE_WIDTH > 768 ? '80%' : '100%')};
@@ -19,6 +18,7 @@ const AppContainer = styled.div`
 	border: 1px solid #000;
 	box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 	background-color: #e8e8e8;
+	overflow: hidden;
 `
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
 		<>
 			<AppContainer>
 				{/* Eisenhower Matrix */}
-				<TodoList todoList={todoList} />
+				<TodoList todoList={todoList} setTodoList={setTodoList} />
 				{/* Todo Input */}
 				<TodoInput setTodoList={setTodoList} />
 			</AppContainer>

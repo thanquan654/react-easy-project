@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
 import styled from 'styled-components'
 import TodoItem from '../interfaces/TodoItem'
-import { DEVICE_WIDTH } from '../constant/windowsMedia'
+import { DEVICE_WIDTH } from '../constants/windowsMedia'
 
 interface Props {
 	setTodoList: React.Dispatch<React.SetStateAction<TodoItem[]>>
@@ -18,6 +18,7 @@ const TodoInputContainer = styled.div`
 	gap: 10px;
 	width: 100%;
 	color: #332e2e;
+	flex: 10%;
 `
 const TodoTextInput = styled.input`
 	flex: 1;
@@ -101,7 +102,7 @@ const TodoInput = ({ setTodoList }: Props) => {
 		setTodoList((prev: TodoItem[]) => [...prev, newTodo])
 		setTodoInput('')
 		setImportanceInput(false)
-		setImportanceInput(false)
+		setUrgencyInput(false)
 		setDateInput(moment(new Date()).format('YYYY-MM-DD'))
 	}
 
