@@ -23,7 +23,7 @@ const AppContainer = styled.div`
 
 function App() {
 	const [todoList, setTodoList] = useState<TodoItem[]>(
-		JSON.parse(localStorage.getItem('todoList') || '{[]}'),
+		JSON.parse(localStorage.getItem('todoList') || '[]'),
 	)
 
 	useEffect(() => {
