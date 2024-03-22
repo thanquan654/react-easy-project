@@ -1,4 +1,5 @@
 import {
+	Button,
 	Card,
 	CardMedia,
 	Container,
@@ -10,10 +11,12 @@ import {
 	Typography,
 } from '@mui/material'
 import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { RootState } from '../redux/store'
 import { ShopItem } from '../interfaces/shopInterface'
+import { filterByCategory, filterByPrice } from '../redux/shopSlice'
+import { useState } from 'react'
 
 const ShoppingWrapper = styled.div`
 	margin-top: 75px;
@@ -24,12 +27,30 @@ const ShoppingWrapper = styled.div`
 `
 const ShoppingContainerStyled = styled(Container)`
 	display: flex;
-	gap: 5px;
+	flex-direction: ${window.screen.width > 765 ? 'row' : 'column'};
+	gap: 20px;
 `
 const CategoryTitle = styled(Typography)`
 	display: flex;
 	align-items: center;
 	gap: 5px;
+`
+const CategoryList = styled.div`
+	display: flex;
+	flex-direction: ${window.screen.width < 765 ? 'row' : 'column'};
+	flex-wrap: wrap;
+`
+const FilterContainer = styled(Grid)`
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 10px;
+`
+const ProductItem = styled(Grid)`
+	padding: 10px;
+	border-radius: 5px;
+	border: 1px solid #000;
 `
 
 function capitalizeFirstLetter(string: string): string {
@@ -37,8 +58,23 @@ function capitalizeFirstLetter(string: string): string {
 }
 
 const ShoppingContainer = () => {
-	const categories = useSelector((state: RootState) => state.shop.categories)
-	const allProduct = useSelector((state: RootState) => state.shop.shopItem)
+	const categories: string[] = useSelector(
+		(state: RootState) => state.shop.categories,
+	)
+	const allProduct: ShopItem[] = useSelector(
+		(state: RootState) => state.shop.filtedShopItem,
+	)
+	const dispatch = useDispatch()
+
+	// const [currentCategory, setCurrentCategory] = useState<string>('all')
+	const [currentFilter, setCurrentFilter] = useState<string>('')
+
+	const handleFilterByPrice = (e) => {
+		dispatch(filterByPrice(e.target.value))
+		setCurrentFilter(
+			e.target.value === currentFilter ? 'all' : e.target.value,
+		)
+	}
 
 	return (
 		<ShoppingWrapper>
@@ -50,28 +86,48 @@ const ShoppingContainer = () => {
 						Category:
 					</CategoryTitle>
 					<Divider />
-					{categories.map((category, index) => (
-						<ListItemButton
-							key={index}
-							component="a"
-							href="#simple-list"
-						>
-							<ListItemText
-								primary={capitalizeFirstLetter(category)}
-							/>
-						</ListItemButton>
-					))}
+					<CategoryList>
+						{categories.map((category, index) => (
+							<ListItemButton key={index} component="a" href="#">
+								<ListItemText
+									primary={capitalizeFirstLetter(category)}
+									onClick={() =>
+										dispatch(filterByCategory(index))
+									}
+								/>
+							</ListItemButton>
+						))}
+					</CategoryList>
 				</List>
-				<div style={{}}>
-					{/* Filter */}
-					<div className="filter">
-						<Typography>Filter by:</Typography>
-					</div>
-					{/* ProductList */}
-					{/* TODO: fix grid */}
-					<Grid columns={{ sx: 2, md: 3 }}>
-						{allProduct.map((product: ShopItem) => (
-							<Card key={product.id}>
+				{/* Filter */}
+
+				{/* ProductList */}
+				{/* TODO: fix grid */}
+				<Grid container>
+					<FilterContainer item xs={12} className="filter">
+						<Typography>Filter:</Typography>
+						<Button
+							variant={
+								currentFilter === 'low' ? 'contained' : 'text'
+							}
+							onClick={handleFilterByPrice}
+							value={'low'}
+						>
+							Price: From low to high
+						</Button>
+						<Button
+							variant={
+								currentFilter === 'high' ? 'contained' : 'text'
+							}
+							onClick={handleFilterByPrice}
+							value={'high'}
+						>
+							Price: From high to low
+						</Button>
+					</FilterContainer>
+					{allProduct.map((product: ShopItem) => (
+						<ProductItem key={product.id} item xs={6} sm={4} md={3}>
+							<Card>
 								<CardMedia
 									component="img"
 									height="194"
@@ -79,10 +135,11 @@ const ShoppingContainer = () => {
 									alt="Paella dish"
 								></CardMedia>
 								{product.title}
+								{product.price}
 							</Card>
-						))}
-					</Grid>
-				</div>
+						</ProductItem>
+					))}
+				</Grid>
 			</ShoppingContainerStyled>
 		</ShoppingWrapper>
 	)

@@ -2,6 +2,10 @@ import { Badge, Button, Container, IconButton, TextField } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import styled from 'styled-components'
+import { useDispatch } from 'react-redux'
+import { filterByName } from '../redux/shopSlice'
+import { useState } from 'react'
+import debounce from 'lodash.debounce'
 
 const HeaderWrapper = styled.div`
 	display: flex;
@@ -10,6 +14,7 @@ const HeaderWrapper = styled.div`
 	background-color: #e2e9f0;
 	width: 100%;
 	height: 75px;
+	z-index: 1;
 `
 const HeaderConteiner = styled(Container)`
 	display: flex;
@@ -26,6 +31,17 @@ const SearchContainer = styled.div`
 `
 
 const Header = () => {
+	const dispatch = useDispatch()
+
+	const [itemNameInput, setItemNameInput] = useState<string>('')
+	const debounceDispatch = debounce(() => {
+		dispatch(filterByName(itemNameInput))
+	}, 1000)
+	const handleSearchItem = (e) => {
+		setItemNameInput(e.target.value)
+		debounceDispatch()
+	}
+
 	return (
 		<HeaderWrapper>
 			<HeaderConteiner maxWidth="lg">
@@ -44,8 +60,13 @@ const Header = () => {
 						fullWidth
 						placeholder="Search Product"
 						size="small"
+						value={itemNameInput}
+						onChange={(e) => handleSearchItem(e)}
 					/>
-					<Button variant="contained">
+					<Button
+						variant="contained"
+						onClick={() => dispatch(filterByName(itemNameInput))}
+					>
 						<SearchIcon />
 					</Button>
 				</SearchContainer>
