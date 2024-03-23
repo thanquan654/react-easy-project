@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'
 import { filterByName } from '../redux/shopSlice'
 import { useState } from 'react'
 import debounce from 'lodash.debounce'
+import { AppDispatch } from '../redux/store'
 
 const HeaderWrapper = styled.div`
 	display: flex;
@@ -31,7 +32,7 @@ const SearchContainer = styled.div`
 `
 
 const Header = () => {
-	const dispatch = useDispatch()
+	const dispatch = useDispatch<AppDispatch>()
 
 	const [itemNameInput, setItemNameInput] = useState<string>('')
 	const debounceDispatch = debounce(() => {

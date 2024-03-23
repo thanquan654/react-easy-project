@@ -5,7 +5,7 @@ export interface ShopItem {
 	category: string
 	description: string
 	image: string
-	ratsing: {
+	rating: {
 		count: number
 		rate: number
 	}

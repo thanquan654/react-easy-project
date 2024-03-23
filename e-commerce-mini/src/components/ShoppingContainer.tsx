@@ -1,26 +1,27 @@
+import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined'
 import {
+	Box,
 	Button,
 	Card,
 	CardMedia,
 	Container,
-	Divider,
 	Grid,
 	List,
 	ListItemButton,
 	ListItemText,
+	Rating,
+	Tooltip,
 	Typography,
 } from '@mui/material'
-import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { RootState } from '../redux/store'
 import { ShopItem } from '../interfaces/shopInterface'
 import { filterByCategory, filterByPrice } from '../redux/shopSlice'
-import { useState } from 'react'
+import { AppDispatch, RootState } from '../redux/store'
 
 const ShoppingWrapper = styled.div`
 	margin-top: 75px;
-	background-color: #ccc;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -47,10 +48,31 @@ const FilterContainer = styled(Grid)`
 	gap: 10px;
 	margin: 10px;
 `
-const ProductItem = styled(Grid)`
+const ProductItem = styled(Card)`
+	display: flex;
+	flex-direction: column;
 	padding: 10px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+	background-color: #ffffffda;
+	cursor: pointer;
+`
+const ProductItemImage = styled(CardMedia)`
+	margin-bottom: 5px;
+	border: 1px solid #cccccc6c;
 	border-radius: 5px;
-	border: 1px solid #000;
+	object-fit: contain;
+	transition: all 0.25s;
+	&:hover {
+		transform: scale(1.02);
+	}
+`
+const ProductItemTitle = styled(Typography)`
+	font-weight: 600;
+`
+const ProductPrice = styled(Typography)`
+	color: #000;
+	font-size: 1.2rem;
+	font-weight: 600;
 `
 
 function capitalizeFirstLetter(string: string): string {
@@ -64,9 +86,9 @@ const ShoppingContainer = () => {
 	const allProduct: ShopItem[] = useSelector(
 		(state: RootState) => state.shop.filtedShopItem,
 	)
-	const dispatch = useDispatch()
+	const dispatch = useDispatch<AppDispatch>()
 
-	// const [currentCategory, setCurrentCategory] = useState<string>('all')
+	const [currentCategory, setCurrentCategory] = useState<string>('all')
 	const [currentFilter, setCurrentFilter] = useState<string>('')
 
 	const handleFilterByPrice = (e) => {
@@ -85,40 +107,48 @@ const ShoppingContainer = () => {
 						<FormatListBulletedOutlinedIcon />
 						Category:
 					</CategoryTitle>
-					<Divider />
 					<CategoryList>
 						{categories.map((category, index) => (
 							<ListItemButton key={index} component="a" href="#">
 								<ListItemText
 									primary={capitalizeFirstLetter(category)}
-									onClick={() =>
+									sx={{
+										color:
+											currentCategory === category
+												? 'blue'
+												: 'grey',
+									}}
+									onClick={() => {
+										setCurrentCategory(category)
 										dispatch(filterByCategory(index))
-									}
+									}}
 								/>
 							</ListItemButton>
 						))}
 					</CategoryList>
 				</List>
-				{/* Filter */}
 
 				{/* ProductList */}
-				{/* TODO: fix grid */}
-				<Grid container>
-					<FilterContainer item xs={12} className="filter">
+				<Grid container spacing={2} sx={{ height: 'fit-content' }}>
+					<FilterContainer item xs={12}>
 						<Typography>Filter:</Typography>
 						<Button
-							variant={
-								currentFilter === 'low' ? 'contained' : 'text'
-							}
+							variant="text"
+							sx={{
+								color: () =>
+									currentFilter === 'low' ? 'blue' : 'grey',
+							}}
 							onClick={handleFilterByPrice}
 							value={'low'}
 						>
 							Price: From low to high
 						</Button>
 						<Button
-							variant={
-								currentFilter === 'high' ? 'contained' : 'text'
-							}
+							variant="text"
+							sx={{
+								color: () =>
+									currentFilter === 'high' ? 'blue' : 'grey',
+							}}
 							onClick={handleFilterByPrice}
 							value={'high'}
 						>
@@ -126,18 +156,46 @@ const ShoppingContainer = () => {
 						</Button>
 					</FilterContainer>
 					{allProduct.map((product: ShopItem) => (
-						<ProductItem key={product.id} item xs={6} sm={4} md={3}>
-							<Card>
-								<CardMedia
+						<Grid key={product.id} item xs={6} sm={4} md={3}>
+							<ProductItem
+								sx={{ height: 300 }}
+								onClick={() => console.log(11)}
+							>
+								<ProductItemImage
 									component="img"
 									height="194"
 									image={product.image}
 									alt="Paella dish"
-								></CardMedia>
-								{product.title}
-								{product.price}
-							</Card>
-						</ProductItem>
+								></ProductItemImage>
+								<Tooltip
+									title={product.title}
+									placement="bottom"
+								>
+									<ProductItemTitle noWrap={true}>
+										{product.title}
+									</ProductItemTitle>
+								</Tooltip>
+								<ProductPrice>${product.price}</ProductPrice>
+								<Box
+									display="flex"
+									justifyContent="flex-start"
+									alignItems="center"
+									gap={0.25}
+								>
+									<Rating
+										sx={{ width: 'fit-content' }}
+										value={product.rating.rate}
+										max={5}
+										name="product-rating"
+										size="small"
+										readOnly
+									/>
+									<Typography>
+										{product.rating.rate}
+									</Typography>
+								</Box>
+							</ProductItem>
+						</Grid>
 					))}
 				</Grid>
 			</ShoppingContainerStyled>
