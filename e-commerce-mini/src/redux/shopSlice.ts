@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { ShopItem } from '../interfaces/shopInterface'
+import { CartItem, ShopItem } from '../interfaces/shopInterface'
 import axios from 'axios'
 
 interface ShopState {
@@ -7,6 +7,8 @@ interface ShopState {
 	filtedShopItem: Array<ShopItem>
 	categories: Array<string>
 	numberOfItem: number
+	cartItems: Array<CartItem>
+	numberOfCartItem: number
 }
 
 const initialState: ShopState = {
@@ -14,6 +16,8 @@ const initialState: ShopState = {
 	filtedShopItem: [],
 	categories: [],
 	numberOfItem: 0,
+	cartItems: [],
+	numberOfCartItem: 0,
 }
 
 const shopSlice = createSlice({
@@ -54,6 +58,27 @@ const shopSlice = createSlice({
 					.includes(action.payload.toLowerCase())
 			})
 			state.filtedShopItem = newState
+		},
+		addItemToCart: (state, action: PayloadAction<number>) => {
+			// Check item in cart
+			for (let i = 0; i < state.cartItems.length; i++) {
+				if (state.cartItems[i].item.id === action.payload) {
+					state.cartItems[0].quantity++
+					state.numberOfCartItem++
+					return
+				}
+			}
+			// If item dosent have in cart list
+			const newItem = state.shopItem.find(
+				(item) => item.id === action.payload,
+			)
+			if (newItem) {
+				state.cartItems.push({
+					item: newItem,
+					quantity: 1,
+				})
+				state.numberOfCartItem++
+			}
 		},
 	},
 	extraReducers: (builder) => {
@@ -100,6 +125,6 @@ export const getAllCategory = createAsyncThunk(
 	},
 )
 
-export const { filterByCategory, filterByPrice, filterByName } =
+export const { filterByCategory, filterByPrice, filterByName, addItemToCart } =
 	shopSlice.actions
 export default shopSlice.reducer

@@ -10,3 +10,8 @@ export interface ShopItem {
 		rate: number
 	}
 }
+
+export interface CartItem {
+	item: ShopItem
+	quantity: number
+}

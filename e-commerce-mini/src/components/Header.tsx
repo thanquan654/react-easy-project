@@ -2,18 +2,21 @@ import { Badge, Button, Container, IconButton, TextField } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import styled from 'styled-components'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { filterByName } from '../redux/shopSlice'
 import { useState } from 'react'
 import debounce from 'lodash.debounce'
-import { AppDispatch } from '../redux/store'
+import { AppDispatch, RootState } from '../redux/store'
+import { setIsOpenCart } from '../redux/appSlice'
 
 const HeaderWrapper = styled.div`
 	display: flex;
 	justify-content: center;
 	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
 	background-color: #e2e9f0;
-	width: 100%;
 	height: 75px;
 	z-index: 1;
 `
@@ -33,8 +36,12 @@ const SearchContainer = styled.div`
 
 const Header = () => {
 	const dispatch = useDispatch<AppDispatch>()
+	const isOpenCart = useSelector((state: RootState) => state.app.isOpenCart)
 
 	const [itemNameInput, setItemNameInput] = useState<string>('')
+	const numberOfCartItem = useSelector(
+		(state: RootState) => state.shop.numberOfCartItem,
+	)
 	const debounceDispatch = debounce(() => {
 		dispatch(filterByName(itemNameInput))
 	}, 1000)
@@ -72,8 +79,14 @@ const Header = () => {
 					</Button>
 				</SearchContainer>
 				{/* Cart */}
-				<IconButton>
-					<Badge color="secondary" badgeContent={0} showZero>
+				<IconButton
+					onClick={() => dispatch(setIsOpenCart(!isOpenCart))}
+				>
+					<Badge
+						color="secondary"
+						badgeContent={numberOfCartItem}
+						showZero
+					>
 						<ShoppingCartOutlinedIcon />
 					</Badge>
 				</IconButton>

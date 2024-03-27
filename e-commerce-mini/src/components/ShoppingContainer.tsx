@@ -17,14 +17,19 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { ShopItem } from '../interfaces/shopInterface'
-import { filterByCategory, filterByPrice } from '../redux/shopSlice'
+import {
+	addItemToCart,
+	filterByCategory,
+	filterByPrice,
+} from '../redux/shopSlice'
 import { AppDispatch, RootState } from '../redux/store'
+import { AddShoppingCart } from '@mui/icons-material'
 
 const ShoppingWrapper = styled.div`
-	margin-top: 75px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	flex: 1;
 `
 const ShoppingContainerStyled = styled(Container)`
 	display: flex;
@@ -97,6 +102,9 @@ const ShoppingContainer = () => {
 			e.target.value === currentFilter ? 'all' : e.target.value,
 		)
 	}
+	const handleAddToCart = (id: number): void => {
+		dispatch(addItemToCart(id))
+	}
 
 	return (
 		<ShoppingWrapper>
@@ -155,48 +163,59 @@ const ShoppingContainer = () => {
 							Price: From high to low
 						</Button>
 					</FilterContainer>
-					{allProduct.map((product: ShopItem) => (
-						<Grid key={product.id} item xs={6} sm={4} md={3}>
-							<ProductItem
-								sx={{ height: 300 }}
-								onClick={() => console.log(11)}
-							>
-								<ProductItemImage
-									component="img"
-									height="194"
-									image={product.image}
-									alt="Paella dish"
-								></ProductItemImage>
-								<Tooltip
-									title={product.title}
-									placement="bottom"
-								>
-									<ProductItemTitle noWrap={true}>
-										{product.title}
-									</ProductItemTitle>
-								</Tooltip>
-								<ProductPrice>${product.price}</ProductPrice>
-								<Box
-									display="flex"
-									justifyContent="flex-start"
-									alignItems="center"
-									gap={0.25}
-								>
-									<Rating
-										sx={{ width: 'fit-content' }}
-										value={product.rating.rate}
-										max={5}
-										name="product-rating"
-										size="small"
-										readOnly
-									/>
-									<Typography>
-										{product.rating.rate}
-									</Typography>
-								</Box>
-							</ProductItem>
-						</Grid>
-					))}
+					<Grid container item={12}>
+						{allProduct.map((product: ShopItem) => (
+							<Grid key={product.id} item xs={6} sm={4} md={3}>
+								<ProductItem sx={{ height: 'fit-content' }}>
+									<ProductItemImage
+										component="img"
+										height="194"
+										image={product.image}
+										alt="Paella dish"
+									></ProductItemImage>
+									<Tooltip
+										title={product.title}
+										placement="bottom"
+									>
+										<ProductItemTitle noWrap={true}>
+											{product.title}
+										</ProductItemTitle>
+									</Tooltip>
+									<ProductPrice>
+										${product.price}
+									</ProductPrice>
+									<Box
+										display="flex"
+										justifyContent="flex-start"
+										alignItems="center"
+										gap={0.25}
+									>
+										<Rating
+											sx={{ width: 'fit-content' }}
+											value={product.rating.rate}
+											max={5}
+											name="product-rating"
+											size="small"
+											readOnly
+										/>
+										<Typography>
+											{product.rating.rate}
+										</Typography>
+									</Box>
+
+									<Button
+										variant="contained"
+										sx={{ marginTop: 1 }}
+										onClick={() =>
+											handleAddToCart(product.id)
+										}
+									>
+										<AddShoppingCart /> Add to Cart
+									</Button>
+								</ProductItem>
+							</Grid>
+						))}
+					</Grid>
 				</Grid>
 			</ShoppingContainerStyled>
 		</ShoppingWrapper>
